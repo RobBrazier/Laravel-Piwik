@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * MIT License
  * ===========
@@ -53,7 +53,7 @@ class Piwik
 // CHECKERS & GETTERS - Check the config file and retrieve the contents
 //
 // --------------------------------------------------------------------
-    
+
     /**
      * date
      * Read config for the period to make API querys about, and translate it into URL-friendly strings
@@ -68,39 +68,39 @@ class Piwik
             case 'today':
                 return '&period=day&date=today';
                 break;
-            
+
             case 'yesterday':
                 return '&period=day&date=yesterday';
                 break;
-            
+
             case 'previous7':
                 return '&period=range&date=previous7';
                 break;
-            
+
             case 'previous30':
                 return '&period=range&date=previous30';
                 break;
-            
+
             case 'last7':
                 return '&period=range&date=last7';
                 break;
-            
+
             case 'last30':
                 return '&period=range&date=last30';
                 break;
-            
+
             case 'currentweek':
                 return '&period=week&date=today';
                 break;
-            
+
             case 'currentmonth':
                 return '&period=month&date=today';
                 break;
-            
+
             case 'currentyear':
                 return '&period=year&date=today';
                 break;
-            
+
             default:
                 return '&period=day&date=yesterday';
                 break;
@@ -167,19 +167,19 @@ class Piwik
             case 'xml':
                 return 'xml';
                 break;
-                
+
             case 'html':
                 return 'html';
                 break;
-                    
+
             case 'rss':
                 return 'rss';
                 break;
-                
+
             case 'original':
                 return 'original';
                 break;
-                    
+
             default:
                 return 'json';
                 break;
@@ -212,7 +212,7 @@ class Piwik
      * @access  private
      * @return  string
      */
-    
+
     private static function get_apikey() {
         static::$apikey = Config::get('piwik::config.api_key');
         static::$username = Config::get('piwik::config.username');
@@ -237,7 +237,7 @@ class Piwik
      * @access  private
      * @return  string
      */
-    
+
     private static function get_piwik_url() {
         static::$piwik_url = Config::get('piwik::config.piwik_url');
         return static::$piwik_url;
@@ -280,15 +280,15 @@ class Piwik
             case 'html':
                 return static::_get($url);
                 break;
-                    
+
             case 'rss':
                 return 'Not supported as of yet';
                 break;
-                
+
             case 'original':
                 return file_get_contents($url);
                 break;
-                    
+
             default:
                 return file_get_contents($url);
                 break;
@@ -306,7 +306,8 @@ class Piwik
 
     private static function url_from_id($id = null) {
         $url = static::get_piwik_url().'/index.php?module=API&method=SitesManager.getSiteUrlsFromId&idSite='.static::get_site_id($id).static::date().'&format=php&token_auth='.static::get_apikey();
-        return static::get_decoded($url, 'php')[0][0];
+        $gd = static::get_decoded($url, 'php');
+        return $gd[0][0];
     }
 
 // ====================================================================
@@ -340,7 +341,7 @@ class Piwik
         $url = static::get_piwik_url().'/index.php?module=API&method=Actions.getDownloads&idSite='.static::get_site_id().static::date().'&format='.static::check_format($format).'&token_auth='.static::get_apikey();
         return static::get_decoded($url, $format);
     }
-    
+
     /**
      * keywords
      * Get search keywords for the specific time period
@@ -353,7 +354,7 @@ class Piwik
         $url = static::get_piwik_url().'/index.php?module=API&method=Referers.getKeywords&idSite='.static::get_site_id().static::date().'&format='.static::check_format($format).'&token_auth='.static::get_apikey();
         return static::get_decoded($url, $format);
     }
-    
+
     /**
      * last_visits
      * Get information about last 10 visits (ip, time, country, pages, etc.)
@@ -367,7 +368,7 @@ class Piwik
         $url = static::get_piwik_url().'/index.php?module=API&method=Live.getLastVisitsDetails&idSite='.static::get_site_id().static::date().'&filter_limit='.$count.'&format='.static::check_format($format).'&token_auth='.static::get_apikey();
         return static::get_decoded($url, $format);
     }
-    
+
     /**
      * last_visits_parsed
      * Get information about last 10 visits (ip, time, country, pages, etc.) in a formatted array with GeoIP information if enabled
@@ -380,27 +381,27 @@ class Piwik
     public static function last_visits_parsed($count, $format = null) {
         $url = static::get_piwik_url().'/index.php?module=API&method=Live.getLastVisitsDetails&idSite='.static::get_site_id().static::date().'&filter_limit='.$count.'&format='.static::check_format($format).'&token_auth='.static::get_apikey();
         $visits = static::get_decoded($url, $format);
-        
+
         $data = array();
         foreach($visits as $v)
         {
             // Get the last array element which has information of the last page the visitor accessed
             switch (static::check_format($format)) {
             case 'json':
-                $count = count($v->actionDetails) - 1; 
+                $count = count($v->actionDetails) - 1;
                 $page_link = $v->actionDetails[$count]->url;
                 $page_title = $v->actionDetails[$count]->pageTitle;
-                
+
                 // Get just the image names (API returns path to icons in piwik install)
                 $flag = explode('/', $v->countryFlag);
                 $flag_icon = end($flag);
-                
+
                 $os = explode('/', $v->operatingSystemIcon);
                 $os_icon = end($os);
-                
+
                 $browser = explode('/', $v->browserIcon);
                 $browser_icon = end($browser);
-                
+
                 $data[] = array(
                   'time' => date("M j Y, g:i a", $v->lastActionTimestamp),
                   'title' => $page_title,
@@ -416,20 +417,20 @@ class Piwik
                 );
                 break;
             case 'php':
-                $count = count($v['actionDetails']) - 1; 
+                $count = count($v['actionDetails']) - 1;
                 $page_link = $v['actionDetails'][$count]['url'];
                 $page_title = $v['actionDetails'][$count]['pageTitle'];
-                
+
                 // Get just the image names (API returns path to icons in piwik install)
                 $flag = explode('/', $v['countryFlag']);
                 $flag_icon = end($flag);
-                
+
                 $os = explode('/', $v['operatingSystemIcon']);
                 $os_icon = end($os);
-                
+
                 $browser = explode('/', $v['browserIcon']);
                 $browser_icon = end($browser);
-                
+
                 $data[] = array(
                   'time' => date("M j Y, g:i a", $v['lastActionTimestamp']),
                   'title' => $page_title,
@@ -446,36 +447,36 @@ class Piwik
                 break;
 
             case 'xml':
-                
+
                 break;
 
             case 'html':
-                
+
                 break;
-                    
+
             case 'rss':
-                
+
                 break;
-                
+
             case 'original':
-                
+
                 break;
-                    
+
             default:
-                $count = count($v->actionDetails) - 1; 
+                $count = count($v->actionDetails) - 1;
                 $page_link = $v->actionDetails[$count]->url;
                 $page_title = $v->actionDetails[$count]->pageTitle;
-                
+
                 // Get just the image names (API returns path to icons in piwik install)
                 $flag = explode('/', $v->countryFlag);
                 $flag_icon = end($flag);
-                
+
                 $os = explode('/', $v->operatingSystemIcon);
                 $os_icon = end($os);
-                
+
                 $browser = explode('/', $v->browserIcon);
                 $browser_icon = end($browser);
-                
+
                 $data[] = array(
                   'time' => date("M j Y, g:i a", $v->lastActionTimestamp),
                   'title' => $page_title,
@@ -491,7 +492,7 @@ class Piwik
                 );
                 break;
             }
-            
+
         }
         return $data;
     }
@@ -508,7 +509,7 @@ class Piwik
         $url = static::get_piwik_url().'/index.php?module=API&method=Actions.getOutlinks&idSite='.static::get_site_id().static::date().'&format='.static::check_format($format).'&token_auth='.static::get_apikey();
         return static::get_decoded($url, $format);
     }
-    
+
     /**
      * page_titles
      * Get page visit information for the specific time period
@@ -579,27 +580,27 @@ class Piwik
      * Get javascript tag for use in tracking the website
      *
      * Note: Works best when using PHP as the format
-     * 
+     *
      * @access  public
      * @param   string  $format     Override string for the format of the API Query to be returned as
      * @return  string
      */
 
     public static function tag() {
-        $tag = 
+        $tag =
 '<!-- Piwik -->
-<script type="text/javascript"> 
-var _paq = _paq || []; 
-(function(){ var u=(("https:" == document.location.protocol) ? "'.static::to_https().'/" : "'.static::to_http().'/"); 
-_paq.push([\'setSiteId\', '.static::get_site_id().']); 
-_paq.push([\'setTrackerUrl\', u+\'piwik.php\']); 
-_paq.push([\'trackPageView\']); 
-_paq.push([\'enableLinkTracking\']); 
+<script type="text/javascript">
+var _paq = _paq || [];
+(function(){ var u=(("https:" == document.location.protocol) ? "'.static::to_https().'/" : "'.static::to_http().'/");
+_paq.push([\'setSiteId\', '.static::get_site_id().']);
+_paq.push([\'setTrackerUrl\', u+\'piwik.php\']);
+_paq.push([\'trackPageView\']);
+_paq.push([\'enableLinkTracking\']);
 var d=document, g=d.createElement(\'script\'), s=d.getElementsByTagName(\'script\')[0]; g.type=\'text/javascript\'; g.defer=true; g.async=true; g.src=u+\'piwik.js\';
 s.parentNode.insertBefore(g,s); })();
-</script> 
+</script>
 <!-- End Piwik Code -->';
-                
+
         return $tag;
     }
 
@@ -615,7 +616,7 @@ s.parentNode.insertBefore(g,s); })();
     public static function seo_rank($id = null, $format = 'json') { // PHP doesn't seem to work with this, so defaults to JSON
         $url = static::get_piwik_url().'/index.php?module=API&method=SEO.getRank&url='.static::url_from_id($id).'&format='.static::check_format($format).'&token_auth='.static::get_apikey();
         return static::get_decoded($url, $format);
-    }  
+    }
 
     /**
      * version
@@ -629,7 +630,7 @@ s.parentNode.insertBefore(g,s); })();
     public static function version($format = null) {
         $url = static::get_piwik_url().'/index.php?module=API&method=API.getPiwikVersion&format='.static::check_format($format).'&token_auth='.static::get_apikey();
         return static::get_decoded($url, $format);
-    }  
+    }
 
     public static function custom($method, $arguments = array(), $id = false, $period = false, $format = null) {
         if($arguments == null){
@@ -650,5 +651,5 @@ s.parentNode.insertBefore(g,s); })();
             return static::get_decoded($url, $format);
         }
     }
-  
+
 }
