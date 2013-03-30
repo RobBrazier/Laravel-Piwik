@@ -632,6 +632,19 @@ s.parentNode.insertBefore(g,s); })();
         return static::get_decoded($url, $format);
     }
 
+    /**
+     * custom
+     * Create a Custom API Query
+     *
+     * @access  public
+     * @param   string           $method        The method to use to query Piwik API
+     * @param   array            $arguments     Array of extra arguments to add to the API Query
+     * @param   boolean integer  $id            This is either a boolean value, 'true' displaying the site ID as declared in config, and also you can enter custom Site IDs
+     * @param   boolean          $period        Determines whether you want the period & date in the query URL
+     * @param   string           $format        Override string for the format of the API Query to be returned as
+     * @return  array
+     */
+
     public static function custom($method, $arguments = array(), $id = false, $period = false, $format = null) {
         if($arguments == null){
             $arguments = array();
@@ -650,6 +663,19 @@ s.parentNode.insertBefore(g,s); })();
             $url .= '&format='.static::check_format($format).'&token_auth='.static::get_apikey();
             return static::get_decoded($url, $format);
         }
+    }
+
+    /**
+     * set_site_id
+     * Set Site ID without changing the id in config
+     *
+     * @access  public
+     * @param   integer  $id    ID to override the Site ID in the config file
+     * @return  null
+     */
+
+    public static function set_site_id($id) {
+        Config::set('piwik::config.site_id', $id);
     }
 
 }
