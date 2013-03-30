@@ -667,7 +667,7 @@ s.parentNode.insertBefore(g,s); })();
 
     /**
      * set_site_id
-     * Set Site ID without changing the id in config
+     * (Temporarily) Set Site ID without changing the id in config
      *
      * @access  public
      * @param   integer  $id    ID to override the Site ID in the config file
