@@ -1,4 +1,4 @@
-# Laravel-Piwik Bundle Version 1.0.2, by Rob Brazier
+# Laravel-Piwik Bundle Version 1.0.3, by Rob Brazier
 
 Laravel-Piwik is an easy way to interface with the Piwik Analytics API
 
@@ -17,3 +17,16 @@ Add the following line to application/bundles.php
     'Piwik' => 'Piwik\\Piwik',
 -->
 More detailed installation process [here](http://robbrazier.com/portfolio/laravel-piwik/installation)
+
+Usage
+-----
+There are two ways to use this class: you can call it statically or non-statically.
+
+Static:
+
+	Piwik::actions();
+
+Non-static:
+
+    $piwik = new Piwik();
+	$piwik->actions();

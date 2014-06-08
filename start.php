@@ -17,6 +17,7 @@
 
 Autoloader::map(array(
 	'Piwik\\Piwik' =>  Bundle::path('piwik').'piwik.php',
+	'Piwik\\PiwikLib' =>  Bundle::path('piwik').'piwik.lib.php',
 ));
 
 /*
